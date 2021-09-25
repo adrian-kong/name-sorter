@@ -1,0 +1,8 @@
+language: csharp
+solution: name_sorter.sln
+install:
+  - nuget restore name_sorter.sln
+  - nuget install NUnit.Console -Version 3.9.0 -OutputDirectory testrunner
+script:
+  - msbuild /p:Configuration=Release name_sorter.sln
+  - mono ./testrunner/NUnit.ConsoleRunner.3.9.0/tools/nunit3-console.exe ./Tests/bin/Release/net472/Tests.dll
