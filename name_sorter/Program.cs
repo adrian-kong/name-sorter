@@ -16,8 +16,13 @@ namespace name_sorter
                 path = args[0];
             }
 
-            PeopleSorter peopleSorter = new PeopleSorter();
-            peopleSorter.ParseInput(path).SortName().WritePeopleToFile();
+            PeopleSorter peopleSorter = new PeopleSorter().ParseInput(path).SortName();
+
+            List<Person> people = peopleSorter.People;
+            people.ForEach(Console.WriteLine);
+
+            const string outputDirectory = "sorted-names-list.txt";
+            File.WriteAllLines(outputDirectory, people.Select(person => person.ToString()).ToArray());
         }
     }
 
@@ -26,9 +31,6 @@ namespace name_sorter
      */
     public class PeopleSorter
     {
-        // static save directory to sorted output to
-        private const string OutputDirectory = "sorted-names-list.txt";
-
         public List<Person> People { get; set; }
 
         /**
@@ -45,6 +47,7 @@ namespace name_sorter
             People = File.ReadAllLines(path).Select(line =>
             {
                 string[] names = line.Split(' ');
+                // Person(n-th word, 1...n-1 words)
                 return new Person(names[names.Length - 1], names.Take(names.Length - 1).ToArray());
             }).ToList();
 
@@ -58,19 +61,6 @@ namespace name_sorter
         {
             People.Sort();
             return this;
-        }
-
-        /**
-         * Write to console and to directory
-         */
-        public void WritePeopleToFile()
-        {
-            foreach (Person person in People)
-            {
-                Console.WriteLine(person);
-            }
-
-            File.WriteAllLines(OutputDirectory, People.Select(person => person.ToString()).ToArray());
         }
     }
 
