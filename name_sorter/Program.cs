@@ -29,7 +29,7 @@ namespace name_sorter
         // static save directory to sorted output to
         private const string OutputDirectory = "sorted-names-list.txt";
 
-        private List<Person> People { get; set; }
+        public List<Person> People { get; set; }
 
         /**
          * Assumes input path exists or will crash
