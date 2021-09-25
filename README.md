@@ -1,5 +1,5 @@
 # name-sorter
-[![Build Status](https://travis-ci.org/adrian-kong/name-sorter.svg?branch=master)](https://travis-ci.org/adrian-kong/name-sorter)
+[![Build Status](https://api.travis-ci.com/adrian-kong/name-sorter.svg?branch=master)](https://api.travis-ci.com/adrian-kong/name-sorter)
 
 Practicing C# for coding assessment
 
