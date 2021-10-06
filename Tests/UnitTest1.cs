@@ -14,7 +14,7 @@ namespace Tests
         public void Test_SortByLastName()
         {
             // ["a c parsons", "a b parsons"]
-            IPersonSorter sorter = new SortByLastName();
+            ISorter<Person> sorter = new SortByLastName();
             List<Person> people = new List<Person>();
 
             Person person1 = new Person("a c parsons");
@@ -22,7 +22,7 @@ namespace Tests
             people.Add(person1);
             people.Add(person2);
 
-            sorter.sort(people);
+            sorter.Sort(people);
 
             // should be sorted to ["a b parsons", "a c parsons"], i.e person2 above person1
             // should sort by GivenNames
