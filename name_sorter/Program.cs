@@ -16,85 +16,101 @@ namespace name_sorter
                 path = args[0];
             }
 
-            PeopleSorter peopleSorter = new PeopleSorter().ParseInput(path).SortName();
+            IPeopleInput input = new PeopleFileInput();
+            List<Person> people = input.parseInput(path);
 
-            List<Person> people = peopleSorter.People;
-            people.ForEach(Console.WriteLine);
+            IPersonSorter sorter = new SortByLastName();
+            sorter.sort(people);
 
-            const string outputDirectory = "sorted-names-list.txt";
-            File.WriteAllLines(outputDirectory, people.Select(person => person.ToString()).ToArray());
+            IPeopleOutput output = new PeopleConsoleOutput();
+            output.parseOutput(people);
         }
     }
 
-    /**
-     * People Sorter Class to handle all the funny business
-     */
-    public class PeopleSorter
+    public interface IPersonSorter
     {
-        public List<Person> People { get; set; }
+        void sort(List<Person> persons);
+    }
 
-        /**
-         * Assumes input path exists or will crash
-         * Reads lines in input file and populates People list
-         */
-        public PeopleSorter ParseInput(string path)
+    public class SortByLastName : IPersonSorter
+    {
+        public void sort(List<Person> persons)
         {
-            if (!File.Exists(path))
+            persons.Sort(Comparer<Person>.Create((p1, p2) =>
             {
-                throw new FileNotFoundException($"File {path} does not exist!");
-            }
+                string[] p1_names = p1.Name.Split(' ');
+                string[] p2_names = p2.Name.Split(' ');
 
-            People = File.ReadAllLines(path).Select(line =>
-            {
-                string[] names = line.Split(' ');
-                // Person(n-th word, 1...n-1 words)
-                return new Person(names[names.Length - 1], names.Take(names.Length - 1).ToArray());
-            }).ToList();
+                string p1_lastname = p1_names[p1_names.Length - 1];
+                string p2_lastname = p2_names[p2_names.Length - 1];
 
-            return this;
+                if (p1_lastname == p2_lastname)
+                {
+                    return p1.Name.CompareTo(p2.Name);
+                }
+
+                return p1_names[p1_names.Length - 1].CompareTo(p2_names[p2_names.Length - 1]);
+            }));
         }
+    }
 
-        /**
-         * Sort the people list by names
-         */
-        public PeopleSorter SortName()
+    interface IPeopleInput
+    {
+        List<Person> parseInput(string path);
+    }
+
+    public class PeopleFileInput : IPeopleInput
+    {
+        public List<Person> parseInput(string path)
         {
-            People.Sort();
-            return this;
+            return File.ReadAllLines(path).Select(fullName => new Person(fullName)).ToList();
         }
+    }
+
+    interface IPeopleOutput
+    {
+        void parseOutput(List<Person> people);
+    }
+
+    public class PeopleConsoleOutput : IPeopleOutput
+    {
+        public void parseOutput(List<Person> people)
+        {
+            people.ForEach(Console.WriteLine);
+        }
+    }
+
+    public class PeopleFileOutput : IPeopleOutput
+    {
+        private string directory { get; set; }
+
+        public void parseOutput(List<Person> people)
+        {
+            File.WriteAllLines(directory, people.Select(person => person.ToString()).ToArray());
+        }
+    }
+
+
+    public interface INameable
+    {
+        string Name { get; set; }
     }
 
     /**
      * Comparable Person object, to handle all the comparing persons logic
      */
-    public class Person : IComparable<Person>
+    public class Person : INameable
     {
-        private string LastName { get; }
+        public string Name { get; set; }
 
-        private string[] GivenNames { get; }
-
-        public Person(string lastName, string[] givenNames)
+        public Person(string name)
         {
-            LastName = lastName;
-            GivenNames = givenNames;
-        }
-
-        /**
-         * Compares based on LastName else GivenNames
-         */
-        public int CompareTo(Person otherPerson)
-        {
-            if (LastName.Equals(otherPerson.LastName))
-            {
-                return string.Join(" ", GivenNames).CompareTo(string.Join(" ", otherPerson.GivenNames));
-            }
-
-            return LastName.CompareTo(otherPerson.LastName);
+            Name = name;
         }
 
         public override string ToString()
         {
-            return $"{string.Join(" ", GivenNames)} {LastName}";
+            return Name;
         }
     }
 }
