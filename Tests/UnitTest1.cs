@@ -26,8 +26,8 @@ namespace Tests
 
             // should be sorted to ["a b parsons", "a c parsons"], i.e person2 above person1
             // should sort by GivenNames
-            Assert.AreEqual(people.ElementAt(0), "a b parsons");
-            Assert.AreEqual(people.ElementAt(1), "a c parsons");
+            Assert.AreEqual(people.ElementAt(0).ToString(), "a b parsons");
+            Assert.AreEqual(people.ElementAt(1).ToString(), "a c parsons");
         }
     }
 }
